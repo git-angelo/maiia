@@ -4,7 +4,7 @@ describe('Technical test home page', () => {
   });
 
   it('can see the intro section', () => {
-    cy.pick('intro').should('be.visible');
+    cy.pick('instructions').should('be.visible');
   });
 
   it('can see the timeslots section', () => {
