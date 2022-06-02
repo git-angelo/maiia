@@ -9,6 +9,6 @@ describe('Timeslots page', () => {
 
   it('can see the time slot list', () => {
     cy.pick('timeslot-list').should('be.visible');
-    cy.pick('timeslot-list').get('.timeslot-item').should('have.length', 30);
+    cy.pick('timeslot-list').get('.timeSlot__item').should('have.length', 30);
   });
 });
