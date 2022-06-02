@@ -613,32 +613,33 @@ section {
 }
 
 .appointment__form {
-  display: flex;
-  flex-direction: column;
-  form {
-    display: flex;
-    flex-direction: column;
-    & > div:not(.cta) {
-      display: flex;
-      align-items: center;
-      min-height: 48px;
-      > label {
-        display: grid;
-        grid-template-columns: 150px 300px;
+  &__container {
+    margin-top: 20px;
+
+    & .MuiGrid-container:first-child {
+      flex-direction: row;
+      & .MuiGrid-item {
+        flex: 1;
       }
     }
 
-    ul {
-      display: flex;
-      justify-content: space-evenly;
+    &__left {
+      & .MuiGrid-container:first-child {
+        flex-direction: column;
+      }
     }
-  }
 
-  .btn {
-    margin-top: 12px;
-  }
-  .cta {
-    align-self: center;
+    &__right {
+      & .MuiGrid-container:first-child {
+        flex-direction: column;
+      }
+    }
+
+    &__submit {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
   }
 }
 
