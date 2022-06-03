@@ -629,11 +629,11 @@ section {
       }
     }
 
-    &__right {
-      & .MuiGrid-container:first-child {
-        flex-direction: column;
-      }
-    }
+    // &__right {
+    //   & .MuiGrid-container:first-child {
+    //     flex-direction: column;
+    //   }
+    // }
 
     &__submit {
       display: flex;
@@ -653,4 +653,58 @@ section {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+}
+
+.timeslots-wrapper {
+  display: flex;
+  flex-direction: column;
+  & .timeslots-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    &__day {
+      &__header {
+        display: flex;
+        flex-direction: column;
+        & .day {
+        }
+        & .date {
+        }
+      }
+
+      &__slots {
+        text-align: center;
+        & > div {
+          height: 40px;
+          padding: 0 10px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          margin-top: 10px;
+        }
+        &__empty {
+          cursor: not-allowed;
+        }
+        &__available {
+          background-color: #acf9d3;
+          border-radius: 5px;
+          cursor: grab;
+
+          &:hover {
+            background-color: #ccc;
+          }
+
+          &.selected {
+            background-color: #8bd1f9;
+          }
+        }
+      }
+    }
+  }
+
+  & .required {
+    color: red;
+  }
 }
