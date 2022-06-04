@@ -16,7 +16,7 @@ module.exports = {
     node: true,
     es6: true,
   },
-  plugins: ['@typescript-eslint', 'react', 'prettier'],
+  plugins: ['@typescript-eslint', 'react', 'prettier', 'react-hooks'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -34,6 +34,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/no-unescaped-entities': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    'react-hooks/exhaustive-deps': 1,
   },
   globals: { React: 'writable' },
 };
