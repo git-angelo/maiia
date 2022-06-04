@@ -6,26 +6,8 @@ import { useEffect, useMemo } from 'react';
 import { timeslotsSelectors, getTimeSlots } from 'store/timeslots';
 import { useDispatch, useSelector } from 'react-redux';
 import { Patient, Practitioner, Timeslot } from '.prisma/client';
-
-const staticPractitioners: Practitioner[] = [
-  { id: 62, firstName: 'Angelo', lastName: 'GALLO', speciality: 'General' },
-  { id: 64, firstName: 'Sandrine', lastName: 'Dupont', speciality: 'Dentist' },
-];
-
-const staticPatients: Patient[] = [
-  {
-    id: 1,
-    firstName: 'Antony',
-    lastName: 'Rey',
-    birthDate: new Date('1995-12-17T03:24:00'),
-  },
-  {
-    id: 2,
-    firstName: 'Olivier',
-    lastName: 'Romand',
-    birthDate: new Date('1990-12-17T03:24:00'),
-  },
-];
+import { getPractitioners, practitionersSelectors } from 'store/practitioners';
+import { getPatients, patientsSelectors } from 'store/patients';
 
 const requiredMessage = (fieldName: string) => {
   return `Field ${fieldName} is required`;
@@ -36,9 +18,17 @@ const AppointmentForm = () => {
   const timeslots = useSelector((state) =>
     timeslotsSelectors.selectAll(state.timeslots),
   );
+  const practitioners = useSelector((state) =>
+    practitionersSelectors.selectAll(state.practitioners),
+  );
+  const patients = useSelector((state) =>
+    patientsSelectors.selectAll(state.patients),
+  );
 
   useEffect(() => {
     dispatch(getTimeSlots());
+    dispatch(getPractitioners());
+    dispatch(getPatients());
   }, []);
 
   const validationSchema = yup.object({
@@ -161,7 +151,7 @@ const AppointmentForm = () => {
               <Autocomplete
                 disablePortal
                 id="practitioner"
-                options={staticPractitioners}
+                options={practitioners}
                 onChange={(e, value) => {
                   setFieldValue('practitioner', value || undefined);
                 }}
@@ -186,7 +176,7 @@ const AppointmentForm = () => {
               <Autocomplete
                 disablePortal
                 id="patient"
-                options={staticPatients}
+                options={patients}
                 onChange={(e, value) => {
                   setFieldValue('patient', value || undefined);
                 }}
