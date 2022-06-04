@@ -217,6 +217,7 @@ const AppointmentForm = () => {
     setFieldValue,
   ]);
 
+  console.log(touched.practitioner && Boolean(errors.practitioner));
   return (
     <div className="appointment__form__container">
       <Grid container spacing={4}>
@@ -228,9 +229,8 @@ const AppointmentForm = () => {
                 id="practitioner"
                 options={practitioners}
                 onChange={(e, value) => {
+                  setFieldValue('timeslot', null, true);
                   setFieldValue('practitioner', value || null);
-                  setFieldValue('timeslot', null);
-                  setFieldTouched('timeslot', false);
                 }}
                 value={values.practitioner || null}
                 getOptionSelected={(option, value) => option.id === value.id}
@@ -255,7 +255,7 @@ const AppointmentForm = () => {
                 id="patient"
                 options={patients}
                 onChange={(e, value) => {
-                  setFieldValue('patient', value || undefined);
+                  setFieldValue('patient', value || null);
                 }}
                 value={values.patient || null}
                 getOptionSelected={(option, value) => option.id === value.id}
