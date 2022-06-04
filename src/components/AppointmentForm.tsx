@@ -2,12 +2,13 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { Button, Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { timeslotsSelectors, getTimeSlots } from 'store/timeslots';
 import { useDispatch, useSelector } from 'react-redux';
 import { Patient, Practitioner, Timeslot } from '.prisma/client';
 import { getPractitioners, practitionersSelectors } from 'store/practitioners';
 import { getPatients, patientsSelectors } from 'store/patients';
+import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 
 const requiredMessage = (fieldName: string) => {
   return `Field ${fieldName} is required`;
@@ -24,6 +25,9 @@ const AppointmentForm = () => {
   const patients = useSelector((state) =>
     patientsSelectors.selectAll(state.patients),
   );
+
+  // Database entries starts on 2023-04-27
+  const [currentDate, setCurrentDate] = useState(new Date(2023, 3, 27));
 
   useEffect(() => {
     dispatch(getTimeSlots());
@@ -77,7 +81,7 @@ const AppointmentForm = () => {
     // data formatting
     const dates = [];
     for (let i = 0; i <= 4; i++) {
-      const date = new Date(2023, 3, 26);
+      const date = new Date(currentDate);
       date.setDate(date.getDate() + i);
       const dayTimeslots = filteredTimeslots.filter(
         (timeslot) => new Date(timeslot.startDate).getDate() === date.getDate(),
@@ -107,9 +111,32 @@ const AppointmentForm = () => {
       dates.push(dateItem);
     }
 
+    const handlePrevious = () => {
+      setCurrentDate((old) => {
+        const newDate = new Date(old);
+        newDate.setDate(old.getDate() - 5);
+        return newDate;
+      });
+    };
+
+    const handleNext = () => {
+      setCurrentDate((old) => {
+        const newDate = new Date(old);
+        newDate.setDate(old.getDate() + 5);
+        return newDate;
+      });
+    };
+
+    const handleSelectTimeslot = (timeslot) => {
+      setFieldValue('timeslot', timeslot);
+    };
+
     return (
       <div className="timeslots-wrapper">
         <div className="timeslots-container">
+          <div className="timeslots-container__arrow">
+            <ArrowBackIos onClick={handlePrevious} />
+          </div>
           {dates.map((date, index) => (
             <div key={`date-${index}`} className="timeslots-container__day">
               <div className="timeslots-container__day__header">
@@ -122,7 +149,7 @@ const AppointmentForm = () => {
                     <div
                       key={`date-${index}-timeslot-${timeslotIndex}`}
                       className={`timeslots-container__day__slots__available ${timeslot.selectedClassName}`}
-                      onClick={() => setFieldValue('timeslot', timeslot)}
+                      onClick={() => handleSelectTimeslot(timeslot)}
                     >
                       {timeslot.formattedSlot}
                     </div>
@@ -138,6 +165,9 @@ const AppointmentForm = () => {
               </div>
             </div>
           ))}
+          <div className="timeslots-container__arrow">
+            <ArrowForwardIos onClick={handleNext} />
+          </div>
         </div>
         {submitCount > 0 && errors.timeslot ? (
           <span className="required">{errors.timeslot}</span>
@@ -149,6 +179,7 @@ const AppointmentForm = () => {
   }, [
     submitCount,
     errors.timeslot,
+    currentDate,
     filteredTimeslots,
     values.timeslot,
     setFieldValue,
