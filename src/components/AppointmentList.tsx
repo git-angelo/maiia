@@ -1,6 +1,9 @@
-import { appointmentsSelectors, getAppointments } from 'store/appointments';
+import appointmentsSlice, {
+  appointmentsSelectors,
+  getAppointments,
+} from 'store/appointments';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   Card,
   CardActionArea,
@@ -28,7 +31,13 @@ const AppointmentList = () => {
     dispatch(getAppointments());
   }, [dispatch]);
 
-  console.log(appointments);
+  const handleDelete = useCallback(
+    (id: number) => {
+      dispatch(appointmentsSlice.actions.appointmentRemoveOne(id));
+    },
+    [dispatch],
+  );
+
   return (
     <div className="appointment__list__container">
       <div className="appointment__list__container__items">
@@ -75,16 +84,8 @@ const AppointmentList = () => {
                   <Button
                     size="small"
                     color="primary"
-                    disabled
                     variant="contained"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    color="primary"
-                    disabled
-                    variant="contained"
+                    onClick={() => handleDelete(appointment.id)}
                   >
                     Delete
                   </Button>

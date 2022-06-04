@@ -14,6 +14,8 @@ import appointmentsSlice, {
 } from 'store/appointments';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 
+const DAYS_TO_DISPLAY = 4;
+
 const requiredMessage = (fieldName: string) => {
   return `Field ${fieldName} is required`;
 };
@@ -85,18 +87,28 @@ const AppointmentForm = () => {
     touched,
   } = formik;
 
-  // timeslots depending on selected practitioner
+  // Avaiblables timeslots depending on selected practitioner
   const filteredTimeslots = useMemo(() => {
-    return timeslots.filter(
-      (item) => item.practitionerId === values.practitioner?.id,
-    );
-  }, [timeslots, values.practitioner?.id]);
+    return timeslots.filter((timeslot) => {
+      const isCurrentPractitioner =
+        timeslot.practitionerId === values.practitioner?.id;
+
+      const appointmentExists =
+        appointments.findIndex(
+          (appointment) => appointment.startDate === timeslot.startDate,
+        ) !== -1
+          ? true
+          : false;
+
+      return isCurrentPractitioner && appointmentExists === false;
+    });
+  }, [appointments, timeslots, values.practitioner?.id]);
 
   // timeslots selector
   const timeslotsContainer = useMemo(() => {
     // data formatting
     const dates = [];
-    for (let i = 0; i <= 4; i++) {
+    for (let i = 1; i <= DAYS_TO_DISPLAY; i++) {
       const date = new Date(currentDate);
       date.setDate(date.getDate() + i);
       const dayTimeslots = filteredTimeslots.filter(
@@ -130,7 +142,7 @@ const AppointmentForm = () => {
     const handlePrevious = () => {
       setCurrentDate((old) => {
         const newDate = new Date(old);
-        newDate.setDate(old.getDate() - 5);
+        newDate.setDate(old.getDate() - DAYS_TO_DISPLAY);
         return newDate;
       });
     };
@@ -138,7 +150,7 @@ const AppointmentForm = () => {
     const handleNext = () => {
       setCurrentDate((old) => {
         const newDate = new Date(old);
-        newDate.setDate(old.getDate() + 5);
+        newDate.setDate(old.getDate() + DAYS_TO_DISPLAY);
         return newDate;
       });
     };
@@ -202,7 +214,6 @@ const AppointmentForm = () => {
     setFieldValue,
   ]);
 
-  console.log(values);
   return (
     <div className="appointment__form__container">
       <Grid container spacing={4}>
