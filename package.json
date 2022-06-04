@@ -13,9 +13,11 @@
     "seed-db": "ts-node --project tsconfig.script.json script.ts"
   },
   "dependencies": {
+    "@date-io/date-fns": "1.x",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.61",
+    "@material-ui/pickers": "^3.3.10",
     "@prisma/cli": "^2.16.0",
     "@prisma/client": "2.16.0",
     "@reduxjs/toolkit": "^1.5.0",

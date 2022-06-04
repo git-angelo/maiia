@@ -661,6 +661,10 @@ section {
       & > div {
         margin-top: 10px;
       }
+
+      & .MuiGrid-container {
+        align-items: flex-end;
+      }
     }
 
     &__items {
