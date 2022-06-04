@@ -12,8 +12,8 @@ import {
   CardActions,
   Button,
 } from '@material-ui/core';
-import { patientsSelectors } from 'store/patients';
-import { practitionersSelectors } from 'store/practitioners';
+import { getPatients, patientsSelectors } from 'store/patients';
+import { getPractitioners, practitionersSelectors } from 'store/practitioners';
 import { formatDateRange } from 'utils/date';
 
 const AppointmentList = () => {
@@ -28,6 +28,8 @@ const AppointmentList = () => {
     patientsSelectors.selectAll(state.patients),
   );
   useEffect(() => {
+    dispatch(getPractitioners());
+    dispatch(getPatients());
     dispatch(getAppointments());
   }, [dispatch]);
 
