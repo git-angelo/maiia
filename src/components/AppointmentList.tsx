@@ -84,7 +84,7 @@ const AppointmentList = () => {
                   <Button
                     size="small"
                     color="primary"
-                    variant="contained"
+                    variant="outlined"
                     onClick={() => handleDelete(appointment.id)}
                   >
                     Delete
