@@ -81,7 +81,6 @@ const AppointmentForm = () => {
   const {
     errors,
     setFieldValue,
-    setFieldTouched,
     values,
     handleSubmit,
     submitCount,
@@ -217,7 +216,6 @@ const AppointmentForm = () => {
     setFieldValue,
   ]);
 
-  console.log(touched.practitioner && Boolean(errors.practitioner));
   return (
     <div className="appointment__form__container">
       <Grid container spacing={4}>
