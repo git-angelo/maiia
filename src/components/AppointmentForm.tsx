@@ -98,6 +98,7 @@ const AppointmentForm = () => {
   const {
     errors,
     setFieldValue,
+    setFieldTouched,
     values,
     handleSubmit,
     submitCount,
@@ -301,8 +302,11 @@ const AppointmentForm = () => {
                 id="practitioner"
                 options={practitioners}
                 onChange={(e, value) => {
-                  setFieldValue('timeslot', null, true);
                   setFieldValue('practitioner', value || null);
+                  if (values.timeslot) {
+                    setFieldValue('timeslot', null);
+                    setFieldTouched('timeslot', null, false);
+                  }
                 }}
                 value={values.practitioner || null}
                 getOptionSelected={(option, value) => option.id === value.id}
