@@ -643,6 +643,25 @@ section {
   }
 }
 
+.appointment__list {
+  &__container {
+    margin-top: 36px;
+
+    &__items {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      row-gap: 10px;
+      column-gap: 20px;
+
+      &__item {
+        width: 250px;
+      }
+    }
+  }
+}
+
 .timeSlots {
   display: flex;
   flex-wrap: wrap;
@@ -668,10 +687,10 @@ section {
       &__header {
         display: flex;
         flex-direction: column;
-        & .day {
-        }
-        & .date {
-        }
+        // & .day {
+        // }
+        // & .date {
+        // }
       }
 
       &__slots {
