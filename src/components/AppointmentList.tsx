@@ -17,6 +17,7 @@ import {
 import { getPatients, patientsSelectors } from 'store/patients';
 import { getPractitioners, practitionersSelectors } from 'store/practitioners';
 import { formatDateRange } from 'utils/date';
+import { DateTimePicker } from '@material-ui/pickers';
 
 const AppointmentList = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,8 @@ const AppointmentList = () => {
   const [filters, setFilters] = useState({
     practitioner: undefined,
     patient: undefined,
+    startDate: undefined,
+    endDate: undefined,
   });
 
   const practitioners = useSelector((state) =>
@@ -75,8 +78,35 @@ const AppointmentList = () => {
       }
     });
 
+    // startDate filter
+    list = list.filter((item) => {
+      if (!filters.startDate) {
+        return true;
+      } else {
+        return new Date(item.startDate) > new Date(filters.startDate);
+      }
+    });
+
+    // endDate filter
+    list = list.filter((item) => {
+      if (!filters.endDate) {
+        return true;
+      } else {
+        return new Date(item.endDate) <= new Date(filters.endDate);
+      }
+    });
+
     return list;
   });
+
+  useEffect(() => {
+    if (filters.startDate === undefined && appointments?.[0]?.startDate) {
+      setFilters((old) => ({
+        ...old,
+        startDate: new Date(appointments?.[0]?.startDate),
+      }));
+    }
+  }, [appointments, filters.startDate]);
 
   const handleDelete = useCallback(
     (id: number) => {
@@ -106,6 +136,26 @@ const AppointmentList = () => {
               onChange={(e) =>
                 setFilters((old) => ({ ...old, patient: e.target.value }))
               }
+            />
+          </Grid>
+          <Grid item>
+            <DateTimePicker
+              value={filters.startDate || null}
+              onChange={(date) =>
+                setFilters((old) => ({ ...old, startDate: date }))
+              }
+              label="Start date"
+              clearable
+            />
+          </Grid>
+          <Grid item>
+            <DateTimePicker
+              value={filters.endDate || null}
+              onChange={(date) =>
+                setFilters((old) => ({ ...old, endDate: date }))
+              }
+              label="End date"
+              clearable
             />
           </Grid>
         </Grid>
