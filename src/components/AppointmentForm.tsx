@@ -49,10 +49,12 @@ const AppointmentForm = () => {
   }, [timeslots]);
 
   useEffect(() => {
-    dispatch(getTimeSlots());
-    dispatch(getPractitioners());
-    dispatch(getPatients());
-    dispatch(getAppointments());
+    (async function () {
+      await dispatch(getTimeSlots());
+      await dispatch(getPractitioners());
+      await dispatch(getPatients());
+      await dispatch(getAppointments());
+    })();
   }, [dispatch]);
 
   useEffect(() => {
