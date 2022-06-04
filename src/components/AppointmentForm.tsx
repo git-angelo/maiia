@@ -305,7 +305,7 @@ const AppointmentForm = () => {
                 value={values.practitioner || null}
                 getOptionSelected={(option, value) => option.id === value.id}
                 getOptionLabel={(option) =>
-                  `${option.firstName} ${option.lastName} | ${option.speciality}`
+                  `${option.firstName} ${option.lastName}, ${option.speciality}`
                 }
                 renderInput={(params) => (
                   <TextField
@@ -329,9 +329,16 @@ const AppointmentForm = () => {
                 }}
                 value={values.patient || null}
                 getOptionSelected={(option, value) => option.id === value.id}
-                getOptionLabel={(option) =>
-                  `${option.firstName} ${option.lastName}`
-                }
+                getOptionLabel={(option) => {
+                  const birthDate = new Date(
+                    option.birthDate,
+                  ).toLocaleDateString(undefined, {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  });
+                  return `${option.firstName} ${option.lastName}, ${birthDate}`;
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
