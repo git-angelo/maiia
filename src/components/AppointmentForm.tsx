@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { Button, Grid, IconButton, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { timeslotsSelectors, getTimeSlots } from 'store/timeslots';
 import { useDispatch, useSelector } from 'react-redux';
 import { Patient, Practitioner, Timeslot } from '.prisma/client';
@@ -16,6 +16,7 @@ import {
   ArrowBackIosOutlined,
   ArrowForwardIosOutlined,
 } from '@material-ui/icons';
+import ReactCanvasConfetti from 'react-canvas-confetti';
 
 const DAYS_TO_DISPLAY = 4;
 
@@ -88,6 +89,7 @@ const AppointmentForm = () => {
       };
       dispatch(appointmentsSlice.actions.appointmentAddOne(newAppointment));
       resetForm();
+      fire();
     },
   });
 
@@ -240,6 +242,52 @@ const AppointmentForm = () => {
     setFieldValue,
   ]);
 
+  const refAnimationInstance = useRef(null);
+
+  // start fancy part =)
+  const getInstance = useCallback((instance) => {
+    refAnimationInstance.current = instance;
+  }, []);
+
+  const makeShot = useCallback((particleRatio, opts) => {
+    refAnimationInstance.current &&
+      refAnimationInstance.current({
+        ...opts,
+        origin: { y: 0.7 },
+        particleCount: Math.floor(500 * particleRatio),
+      });
+  }, []);
+
+  const fire = useCallback(() => {
+    makeShot(0.25, {
+      spread: 26,
+      startVelocity: 55,
+    });
+
+    makeShot(0.2, {
+      spread: 60,
+    });
+
+    makeShot(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8,
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 25,
+      decay: 0.92,
+      scalar: 1.2,
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 45,
+    });
+  }, [makeShot]);
+  // end fancy part :(
+
   return (
     <div className="appointment__form__container">
       <Grid container spacing={4}>
@@ -307,6 +355,7 @@ const AppointmentForm = () => {
           Validate
         </Button>
       </div>
+      <ReactCanvasConfetti refConfetti={getInstance} className="fancy" />
     </div>
   );
 };
