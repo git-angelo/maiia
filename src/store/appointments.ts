@@ -27,7 +27,10 @@ const appointmentsSlice = createSlice({
     loading: false,
     error: null,
   }),
-  reducers: {},
+  reducers: {
+    appointmentAddOne: appointmentsAdapter.addOne,
+    appointmentRemoveOne: appointmentsAdapter.removeOne,
+  },
   extraReducers: (builder) => {
     builder.addCase(getAppointments.pending, (state) => {
       state.loading = true;
