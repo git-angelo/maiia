@@ -22,9 +22,11 @@ const AppointmentList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getPractitioners());
-    dispatch(getPatients());
-    dispatch(getAppointments());
+    (async function () {
+      await dispatch(getPractitioners());
+      await dispatch(getPatients());
+      await dispatch(getAppointments());
+    })();
   }, [dispatch]);
 
   const [filters, setFilters] = useState({
