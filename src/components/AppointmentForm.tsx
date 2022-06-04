@@ -242,9 +242,9 @@ const AppointmentForm = () => {
     setFieldValue,
   ]);
 
+  // start fancy part =)
   const refAnimationInstance = useRef(null);
 
-  // start fancy part =)
   const getInstance = useCallback((instance) => {
     refAnimationInstance.current = instance;
   }, []);
