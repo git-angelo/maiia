@@ -278,7 +278,7 @@ const AppointmentForm = () => {
         </Grid>
       </Grid>
       <div className="appointment__form__container__submit">
-        <Button variant="contained" onClick={() => handleSubmit()}>
+        <Button variant="outlined" onClick={() => handleSubmit()}>
           Validate
         </Button>
       </div>
