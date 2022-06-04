@@ -29,7 +29,7 @@ const AppointmentForm = () => {
     dispatch(getTimeSlots());
     dispatch(getPractitioners());
     dispatch(getPatients());
-  }, []);
+  }, [dispatch]);
 
   const validationSchema = yup.object({
     practitioner: yup.object().required(requiredMessage('practitioner')),
@@ -65,13 +65,16 @@ const AppointmentForm = () => {
     touched,
   } = formik;
 
+  // timeslots depending on selected practitioner
   const filteredTimeslots = useMemo(() => {
     return timeslots.filter(
       (item) => item.practitionerId === values.practitioner?.id,
     );
-  }, [values.practitioner]);
+  }, [timeslots, values.practitioner?.id]);
 
+  // timeslots selector
   const timeslotsContainer = useMemo(() => {
+    // data formatting
     const dates = [];
     for (let i = 0; i <= 4; i++) {
       const date = new Date(2023, 3, 26);
@@ -87,9 +90,14 @@ const AppointmentForm = () => {
           const dayTimeslotDate = new Date(dayTimeslot.startDate);
           const hours = String(dayTimeslotDate.getHours()).padStart(2, '0');
           const minuts = String(dayTimeslotDate.getMinutes()).padStart(2, '0');
+          const selectedClassName =
+            values.timeslot && dayTimeslot?.id === values.timeslot.id
+              ? 'selected'
+              : '';
           return {
             ...dayTimeslot,
             formattedSlot: `${hours}:${minuts}`,
+            selectedClassName: selectedClassName,
           };
         }),
       };
@@ -110,17 +118,11 @@ const AppointmentForm = () => {
               </div>
               <div className="timeslots-container__day__slots">
                 {date.timeslots.map((timeslot, timeslotIndex) => {
-                  const selectedClassName =
-                    values.timeslot && timeslot?.id === values.timeslot.id
-                      ? 'selected'
-                      : '';
                   return timeslot ? (
                     <div
                       key={`date-${index}-timeslot-${timeslotIndex}`}
-                      className={`timeslots-container__day__slots__available ${selectedClassName}`}
-                      onClick={() => {
-                        setFieldValue('timeslot', timeslot);
-                      }}
+                      className={`timeslots-container__day__slots__available ${timeslot.selectedClassName}`}
+                      onClick={() => setFieldValue('timeslot', timeslot)}
                     >
                       {timeslot.formattedSlot}
                     </div>
@@ -137,10 +139,20 @@ const AppointmentForm = () => {
             </div>
           ))}
         </div>
-        <span className="required">{submitCount > 0 && errors.timeslot}</span>
+        {submitCount > 0 && errors.timeslot ? (
+          <span className="required">{errors.timeslot}</span>
+        ) : (
+          ''
+        )}
       </div>
     );
-  }, [filteredTimeslots, values.timeslot, submitCount, errors.timeslot]);
+  }, [
+    submitCount,
+    errors.timeslot,
+    filteredTimeslots,
+    values.timeslot,
+    setFieldValue,
+  ]);
 
   return (
     <div className="appointment__form__container">
