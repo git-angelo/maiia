@@ -662,6 +662,7 @@ section {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 
     &__day {
       &__header {
@@ -701,6 +702,12 @@ section {
           }
         }
       }
+    }
+
+    &__arrow {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
   }
 
