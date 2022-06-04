@@ -624,6 +624,7 @@ section {
     }
 
     &__left {
+      min-width: 300px;
       & .MuiGrid-container:first-child {
         flex-direction: column;
       }
