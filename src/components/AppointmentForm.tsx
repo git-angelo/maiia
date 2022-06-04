@@ -8,6 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Patient, Practitioner, Timeslot } from '.prisma/client';
 import { getPractitioners, practitionersSelectors } from 'store/practitioners';
 import { getPatients, patientsSelectors } from 'store/patients';
+import appointmentsSlice, {
+  getAppointments,
+  appointmentsSelectors,
+} from 'store/appointments';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 
 const requiredMessage = (fieldName: string) => {
@@ -25,6 +29,9 @@ const AppointmentForm = () => {
   const patients = useSelector((state) =>
     patientsSelectors.selectAll(state.patients),
   );
+  const appointments = useSelector((state) =>
+    appointmentsSelectors.selectAll(state.appointments),
+  );
 
   // Database entries starts on 2023-04-27
   const [currentDate, setCurrentDate] = useState(new Date(2023, 3, 27));
@@ -33,18 +40,19 @@ const AppointmentForm = () => {
     dispatch(getTimeSlots());
     dispatch(getPractitioners());
     dispatch(getPatients());
+    dispatch(getAppointments());
   }, [dispatch]);
 
   const validationSchema = yup.object({
-    practitioner: yup.object().required(requiredMessage('practitioner')),
-    patient: yup.object().required(requiredMessage('patient')),
-    timeslot: yup.object().required(requiredMessage('timeslot')),
+    practitioner: yup.mixed().required(requiredMessage('practitioner')),
+    patient: yup.mixed().required(requiredMessage('patient')),
+    timeslot: yup.mixed().required(requiredMessage('timeslot')),
   });
 
   const initialValues = {
-    practitioner: undefined,
-    patient: undefined,
-    timeslot: undefined,
+    practitioner: null,
+    patient: null,
+    timeslot: null,
   } as {
     practitioner: Practitioner;
     patient: Patient;
@@ -56,13 +64,21 @@ const AppointmentForm = () => {
     validationSchema: validationSchema,
     validateOnChange: true,
     onSubmit: (values) => {
-      console.log(values);
+      const newAppointment = {
+        id: Math.max(...appointments.map((o) => o.id)) + 1,
+        patientId: values.patient.id,
+        practitionerId: values.practitioner.id,
+        startDate: values.timeslot.startDate,
+        endDate: values.timeslot.endDate,
+      };
+      dispatch(appointmentsSlice.actions.appointmentAddOne(newAppointment));
     },
   });
 
   const {
     errors,
     setFieldValue,
+    setFieldTouched,
     values,
     handleSubmit,
     submitCount,
@@ -169,7 +185,7 @@ const AppointmentForm = () => {
             <ArrowForwardIos onClick={handleNext} />
           </div>
         </div>
-        {submitCount > 0 && errors.timeslot ? (
+        {submitCount > 0 && touched.timeslot && errors.timeslot ? (
           <span className="required">{errors.timeslot}</span>
         ) : (
           ''
@@ -178,6 +194,7 @@ const AppointmentForm = () => {
     );
   }, [
     submitCount,
+    touched.timeslot,
     errors.timeslot,
     currentDate,
     filteredTimeslots,
@@ -185,6 +202,7 @@ const AppointmentForm = () => {
     setFieldValue,
   ]);
 
+  console.log(values);
   return (
     <div className="appointment__form__container">
       <Grid container spacing={4}>
@@ -196,7 +214,9 @@ const AppointmentForm = () => {
                 id="practitioner"
                 options={practitioners}
                 onChange={(e, value) => {
-                  setFieldValue('practitioner', value || undefined);
+                  setFieldValue('practitioner', value || null);
+                  setFieldValue('timeslot', null);
+                  setFieldTouched('timeslot', false);
                 }}
                 value={values.practitioner || null}
                 getOptionSelected={(option, value) => option.id === value.id}
