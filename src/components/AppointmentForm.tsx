@@ -65,7 +65,7 @@ const AppointmentForm = () => {
     initialValues: initialValues,
     validationSchema: validationSchema,
     validateOnChange: true,
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const newAppointment = {
         id: Math.max(...appointments.map((o) => o.id)) + 1,
         patientId: values.patient.id,
@@ -74,6 +74,7 @@ const AppointmentForm = () => {
         endDate: values.timeslot.endDate,
       };
       dispatch(appointmentsSlice.actions.appointmentAddOne(newAppointment));
+      resetForm();
     },
   });
 
@@ -95,7 +96,9 @@ const AppointmentForm = () => {
 
       const appointmentExists =
         appointments.findIndex(
-          (appointment) => appointment.startDate === timeslot.startDate,
+          (appointment) =>
+            appointment.practitionerId === values.practitioner?.id &&
+            appointment.startDate === timeslot.startDate,
         ) !== -1
           ? true
           : false;
