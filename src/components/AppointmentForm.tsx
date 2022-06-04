@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, Grid, IconButton, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useMemo, useState } from 'react';
 import { timeslotsSelectors, getTimeSlots } from 'store/timeslots';
@@ -12,7 +12,10 @@ import appointmentsSlice, {
   getAppointments,
   appointmentsSelectors,
 } from 'store/appointments';
-import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
+import {
+  ArrowBackIosOutlined,
+  ArrowForwardIosOutlined,
+} from '@material-ui/icons';
 
 const DAYS_TO_DISPLAY = 4;
 
@@ -35,8 +38,14 @@ const AppointmentForm = () => {
     appointmentsSelectors.selectAll(state.appointments),
   );
 
-  // Database entries starts on 2023-04-27
-  const [currentDate, setCurrentDate] = useState(new Date(2023, 3, 27));
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const minDate = useMemo(() => {
+    if (timeslots?.length) {
+      return new Date(timeslots[0].startDate);
+    }
+    return new Date();
+  }, [timeslots]);
 
   useEffect(() => {
     dispatch(getTimeSlots());
@@ -44,6 +53,10 @@ const AppointmentForm = () => {
     dispatch(getPatients());
     dispatch(getAppointments());
   }, [dispatch]);
+
+  useEffect(() => {
+    setCurrentDate(minDate);
+  }, [minDate]);
 
   const validationSchema = yup.object({
     practitioner: yup.mixed().required(requiredMessage('practitioner')),
@@ -110,7 +123,7 @@ const AppointmentForm = () => {
   const timeslotsContainer = useMemo(() => {
     // data formatting
     const dates = [];
-    for (let i = 1; i <= DAYS_TO_DISPLAY; i++) {
+    for (let i = 0; i < DAYS_TO_DISPLAY; i++) {
       const date = new Date(currentDate);
       date.setDate(date.getDate() + i);
       const dayTimeslots = filteredTimeslots.filter(
@@ -144,8 +157,11 @@ const AppointmentForm = () => {
     const handlePrevious = () => {
       setCurrentDate((old) => {
         const newDate = new Date(old);
-        newDate.setDate(old.getDate() - DAYS_TO_DISPLAY);
-        return newDate;
+        if (newDate > minDate) {
+          newDate.setDate(old.getDate() - DAYS_TO_DISPLAY);
+          return newDate;
+        }
+        return old;
       });
     };
 
@@ -165,7 +181,12 @@ const AppointmentForm = () => {
       <div className="timeslots-wrapper">
         <div className="timeslots-container">
           <div className="timeslots-container__arrow">
-            <ArrowBackIos onClick={handlePrevious} />
+            <IconButton
+              onClick={handlePrevious}
+              disabled={currentDate <= minDate}
+            >
+              <ArrowBackIosOutlined />
+            </IconButton>
           </div>
           {dates.map((date, index) => (
             <div key={`date-${index}`} className="timeslots-container__day">
@@ -196,7 +217,9 @@ const AppointmentForm = () => {
             </div>
           ))}
           <div className="timeslots-container__arrow">
-            <ArrowForwardIos onClick={handleNext} />
+            <IconButton onClick={handleNext}>
+              <ArrowForwardIosOutlined />
+            </IconButton>
           </div>
         </div>
         {submitCount > 0 && touched.timeslot && errors.timeslot ? (
@@ -207,10 +230,11 @@ const AppointmentForm = () => {
       </div>
     );
   }, [
+    currentDate,
+    minDate,
     submitCount,
     touched.timeslot,
     errors.timeslot,
-    currentDate,
     filteredTimeslots,
     values.timeslot,
     setFieldValue,
